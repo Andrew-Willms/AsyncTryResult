@@ -14,11 +14,11 @@ if (!Foo.Foo1(out int? value1, out Error? error1)) {
 Console.WriteLine(value1 * 2);
 
 // Null awareness possible using AsyncTryResult<int, Error>.
-AsyncTryResult<int, Error> result1Async = await Foo.Foo1Async();
-if (result1Async.IsError) {
-	Console.WriteLine(result1Async.Error.FancyPrint());
+AsyncTryResult<int, Error> result1 = await Foo.Foo1Async();
+if (result1.IsError) {
+	Console.WriteLine(result1.Error.FancyPrint());
 }
-Console.WriteLine(result1Async.Value * 2);
+Console.WriteLine(result1.Value * 2);
 
 
 
@@ -37,7 +37,7 @@ AsyncTryResult<int> result2 = await Foo.Foo2Async();
 if (result2.IsError) {
 	Console.WriteLine("An error occurred.");
 }
-Console.WriteLine(result1Async.Value * 2);
+Console.WriteLine(result2.Value * 2);
 
 
 

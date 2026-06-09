@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="AsyncTryResult/AsyncTryResult.csproj" />
+  <Project Path="Examples/Examples.csproj" />
+</Solution>

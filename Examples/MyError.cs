@@ -2,7 +2,7 @@
 
 
 
-public record Error {
+public record MyError {
 	
 	public required string Message { get; init; }
 

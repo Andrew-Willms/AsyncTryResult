@@ -6,15 +6,15 @@ A lightweight library providing out-variable-like functionality for async method
 
 Using the `[NotNullWhen]` attribute from `System.Diagnostics.CodeAnalysis` it is possible to inform the compiler that out parameters of a method you define will not be null depending on the return value. This is shown below.
 
-![alt text](image-32.png)
+![alt text](ReadMeImages/image-32.png)
 
 Unfortunately, this is not possible for asynchronous methods because out parameters on async methods are not supported in C#. This library provides the `AsyncTryResult<TValue, TError>` (and several other similar ones) to fill this gap. Using these types you can write concise error handling code that is null-checked by the compiler.
 
-![alt text](image-27.png)
+![alt text](ReadMeImages/image-27.png)
 
 Defining a function that uses `AsyncTryResult<TValue, TError>` is shown below. The implicit conversions from `TValue` and `TError` to the result types make their use mostly transparent to the developer.
 
-![alt text](image-31.png)
+![alt text](ReadMeImages/image-31.png)
 
 ## But Why *This* Result Type
 A vast host of result type libraries are available in C#.
@@ -28,7 +28,7 @@ C# handles nullable value types differently than nullable reference types. Inste
 
 In the first example, `ValueFoo()` indicates that the out parameter, `value4`, is not null when the the function returns true using a `[NotNullWhen(true)]` attribute. If `value4` were a value type the compiler would know that `value4` was not null after the close of the if-block. For value types this is evidently not the case.
 
-![alt text](image-20.png)
+![alt text](ReadMeImages/image-20.png)
 
 The second example is more dangerous and is the reason why `TValue` and `TError` are constrainted to reference types.
 
@@ -36,21 +36,21 @@ In this example, `ValueFooAsyn2()` returns a `UnrestrictedAsyncTryResult<int, My
 
 As shown in the code below, this works for the property `Error`, which is a reference type, and unchecked access to `Error` results in a compile time warning. In contrast, unchecked access to `Value`, which is a value type, does not yield any warning. More concerningly, if `result4.Value` is accessed while it is null it silently fails and evaluates to 0. No `NullRefernceException` is raised.
 
-![alt text](image-18.png)
+![alt text](ReadMeImages/image-18.png)
 
 ### Value Type Solution
 
 To manage this difference, this library provides the `AsyncTryValueResult<TValue, TError>` and `AsyncTryValueResult<TValue>` types. These types restrict `Tvalue` to value types and wrap the value in a simple `Box<T>` reference type. The `Box<T>` definces implicit operators for converting to and from type `T` to allow for easy conversion.
 
-![alt text](image-16.png)
+![alt text](ReadMeImages/image-16.png)
 
 The usage of `AsyncTryValueResult<TValue, TError>` in a method definition is shown below. Again, the implicit casts from `TValue` and `TError` to `AsyncTryValueResult<TValue, TError>` make its usage mostly transparent to the developer.
 
-![alt text](image-19.png)
+![alt text](ReadMeImages/image-19.png)
 
 It is also possible wrap the out parameters of a synchronous method with the `Box<T>` type recieve proper null type narrowing.
 
-![alt text](image-13.png)
+![alt text](ReadMeImages/image-13.png)
 
 No alternative type is provided to support value types for `TError`. This choice was made because it is expected that most users will use strings or custom error types as `TError`, both of which are reference types. In addition, doing so would require three more permutations of the result types which felt clunky.
 

@@ -4,11 +4,11 @@ namespace AsyncTryResult;
 
 
 
-public record AsyncTryResult<TValue, TError>
-	where TValue : class 
+public record AsyncTryValueResult<TValue, TError>
+	where TValue : struct
 	where TError : class {
 
-	public TValue? Value { get; }
+	public Box<TValue>? Value { get; }
 
 	public TError? Error { get; }
 
@@ -20,25 +20,25 @@ public record AsyncTryResult<TValue, TError>
 	[MemberNotNullWhen(true, nameof(Error))]
 	public bool IsFailure { get; }
 
-	public AsyncTryResult(TValue value) {
+	public AsyncTryValueResult(TValue value) {
 
 		Value = value;
 		IsSuccess = true;
 		IsFailure = false;
 	}
 
-	public AsyncTryResult(TError error) {
+	public AsyncTryValueResult(TError error) {
 
 		Error = error;
 		IsSuccess = false;
 		IsFailure = true;
 	}
 
-	public static implicit operator AsyncTryResult<TValue, TError>(TValue success) {
+	public static implicit operator AsyncTryValueResult<TValue, TError>(TValue success) {
 		return new(success);
 	}
 
-	public static implicit operator AsyncTryResult<TValue, TError>(TError error) {
+	public static implicit operator AsyncTryValueResult<TValue, TError>(TError error) {
 		return new(error);
 	}
 
@@ -46,9 +46,9 @@ public record AsyncTryResult<TValue, TError>
 
 
 
-public record AsyncTryResult<TValue> where TValue : class {
+public record AsyncTryValueResult<TValue> where TValue : struct {
 
-	public TValue? Value { get; }
+	public Box<TValue>? Value { get; }
 
 	[MemberNotNullWhen(true, nameof(Value))]
 	public bool IsSuccess { get; }
@@ -56,20 +56,20 @@ public record AsyncTryResult<TValue> where TValue : class {
 	[MemberNotNullWhen(false, nameof(Value))]
 	public bool IsFailure { get; }
 
-	public AsyncTryResult(TValue value) {
+	public AsyncTryValueResult(TValue value) {
 		Value = value;
 		IsSuccess = true;
 		IsFailure = false;
 	}
 
-	private AsyncTryResult() {
+	private AsyncTryValueResult() {
 		IsSuccess = false;
 		IsFailure = true;
 	}
 
-	public static readonly AsyncTryResult<TValue> Failure = new();
+	public static readonly AsyncTryValueResult<TValue> Failure = new();
 
-	public static implicit operator AsyncTryResult<TValue>(TValue success) {
+	public static implicit operator AsyncTryValueResult<TValue>(TValue success) {
 		return new(success);
 	}
 

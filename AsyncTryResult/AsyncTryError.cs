@@ -4,7 +4,7 @@ namespace AsyncTryResult;
 
 
 
-public record AsyncTryError<TError> {
+public record AsyncTryError<TError> where TError : class {
 
 	public TError? Error { get; }
 

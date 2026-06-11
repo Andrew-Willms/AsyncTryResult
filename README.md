@@ -17,8 +17,8 @@ A vast host of result type libraries are available in C#, each of which has a sl
 
 AsyncTaskResult is optimized for the following:
 - Very small and simple to understand (200 LOC including whitespace).
-- Does not provide opinionated errors. You are requried to bring your own.
-- Error handing that takes advantage of the compiler's null-checking.
+- Does not provide opinionated errors. You are required to bring your own.
+- Error handling that takes advantage of the compiler's null-checking.
 - Extremely concise error handling when you only care if an operation was a success or failure.
 
 ![An example of the concise error handling that is possible using the AsyncTryResult type.](ReadMeImages/image-3.png)
@@ -34,21 +34,21 @@ In the first example, `ValueFoo()` uses a `[NotNullWhen(true)]` attribute to ind
 
 ![An example of the shortcomings of the C# compiler's null-checking of nullable value types.](ReadMeImages/image-4.png)
 
-The second example is more dangerous and is the reason why `TValue` and `TError` are constrainted to reference types.
+The second example is more dangerous and is the reason why `TValue` and `TError` are constrained to reference types.
 
-In this example, `ValueFooAsyn2()` returns a `UnrestrictedAsyncTryResult<int, MyError>` – a type created specifically for this example. This object has properties `TError? Error`, `TValue? Value`, `bool IsSuccess`, and `bool IsFailure`. The latter two properties are decorated with `[MemberNotNullWhen] attributes` indicating that the `Value` property is not null when `IsSuccess` is true, et cetera.
+In this example, `ValueFooAsync2()` returns a `UnrestrictedAsyncTryResult<int, MyError>` – a type created specifically for this example. This object has properties `TError? Error`, `TValue? Value`, `bool IsSuccess`, and `bool IsFailure`. The latter two properties are decorated with `[MemberNotNullWhen] attributes` indicating that the `Value` property is not null when `IsSuccess` is true, et cetera.
 
-As shown in the code below, this works for the property `Error`, which is a reference type, and unchecked access to `Error` results in a compile time warning. In contrast, unchecked access to `Value`, which is a value type, does not yield any warning. Even more concerningly, if `result4.Value` is accessed while it is null it silently fails and evaluates to 0. No `NullRefernceException` is raised.
+As shown in the code below, this works for the property `Error`, which is a reference type, and unchecked access to `Error` results in a compile time warning. In contrast, unchecked access to `Value`, which is a value type, does not yield any warning. Even more concerningly, if `result4.Value` is accessed while it is null it silently fails and evaluates to 0. No `NullReferenceException` is raised.
 
 ![A second example of the shortcomings of the C# compiler's null-checking of nullable value types.](ReadMeImages/image-5.png)
 
 ### Value Type Solution
 
-To manage this difference, this library provides the `AsyncTryValueResult<TValue, TError>` and `AsyncTryValueResult<TValue>` types. These types restrict `Tvalue` to value types and wrap the value in a simple `Box<T>` reference type. The `Box<T>` definces implicit operators for converting to and from type `T` to allow for easy conversion.
+To manage this difference, this library provides the `AsyncTryValueResult<TValue, TError>` and `AsyncTryValueResult<TValue>` types. These types restrict `TValue` to value types and wrap the value in a simple `Box<T>` reference type. The `Box<T>` defines implicit operators for converting to and from type `T` to allow for easy conversion.
 
-![An example of the usage of the AsyncTryValueResult type and how it solves the afformentioned value type null-checking issues.](ReadMeImages/image-6.png)
+![An example of the usage of the AsyncTryValueResult type and how it solves the aforementioned value type null-checking issues.](ReadMeImages/image-6.png)
 
-If desired, it is also possible wrap the out parameters of a synchronous method with the `Box<T>` type recieve proper null type narrowing.
+If desired, it is also possible wrap the out parameters of a synchronous method with the `Box<T>` type receive proper null type narrowing.
 
 ![An example of how the Box type can be used with synchronous methods to improve value type null-checking.](ReadMeImages/image-7.png)
 

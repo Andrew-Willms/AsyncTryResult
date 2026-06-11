@@ -30,7 +30,7 @@ AsyncTaskResult is optimized for the following:
 
 C# handles nullable value types differently than nullable reference types. Instead of tracking the nullability of reference types with compile time static analysis, nullable value types are syntactic sugar for `System.Nullable<T>`. The unfortunate side effect of this is that the `System.Diagnostics.CodeAnalysis` attributes – such as `[NotNullWhen]`, which can be used to narrow nullable reference types at compile time, do not work with nullable value types. Some problematic examples caused by this are shown below.
 
-In the first example, `ValueFoo()` uses a `[NotNullWhen(true)]` attribute to indicate that the out parameter, `value`, is not null when the the function returns true. If this worked with value types as it does with reference types, the compiler would know that `value4` was not null after the close of the if-block. However, as can be seen in the example below, this is evidently not the case.
+In the first example, `ValueFoo()` uses a `[NotNullWhen(true)]` attribute to indicate that the out parameter, `value`, is not null when the function returns true. If this worked with value types as it does with reference types, the compiler would know that `value4` was not null after the close of the if-block. However, as can be seen in the example below, this is evidently not the case.
 
 ![An example of the shortcomings of the C# compiler's null-checking of nullable value types.](ReadMeImages/image-4.png)
 

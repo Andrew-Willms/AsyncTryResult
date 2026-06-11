@@ -10,4 +10,8 @@ public record MyError {
 		return $"Very Serious Error (╯°□°）╯︵ ┻━┻: ~~~ {Message} ~~~";
 	}
 
+	public int ExampleFunction() {
+		return 1;
+	}
+
 }

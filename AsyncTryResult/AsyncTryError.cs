@@ -12,17 +12,17 @@ public record AsyncTryError<TError> where TError : class {
 	public bool IsSuccess { get; }
 
 	[MemberNotNullWhen(true, nameof(Error))]
-	public bool IsError { get; }
+	public bool IsFailure { get; }
 
 	public AsyncTryError(TError? error) {
 		Error = error;
 		IsSuccess = false;
-		IsError = true;
+		IsFailure = true;
 	}
 
 	private AsyncTryError() {
 		IsSuccess = true;
-		IsError = false;
+		IsFailure = false;
 	}
 
 	public static readonly AsyncTryError<TError> Success = new();

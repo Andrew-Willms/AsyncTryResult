@@ -1,130 +1,312 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using AsyncTryResult;
 using Examples;
+// ReSharper disable MoveLocalFunctionAfterJumpStatement
 
 
+
+Random random = new();
 
 ////////////////////////////////////////////////////////////////////////////////
-//    Example with return values for success and failure.                     //
+//    Synchronous example with return values for success and failure.         //
 ////////////////////////////////////////////////////////////////////////////////
 
 // Null awareness possible using System.Diagnostics.CodeAnalysis attributes.
-if (!Foo.Foo1(out MyData? value1, out MyError? error1)) {
-	Console.WriteLine(error1.FancyPrint());
-	return;
+bool Foo1([NotNullWhen(true)] out MyData? value, [NotNullWhen(false)] out MyError? error) {
+
+	if (random.Next(1) == 1) {
+		value = null;
+		error = new() { Message = "An error occurred." };
+		return false;
+	}
+
+	value = new() { Number = 1 };
+	error = null;
+	return true;
 }
 
-// The compiler knows error1 may be null.
+if (!Foo1(out MyData? value1, out MyError? error1)) {
+	// The compiler knows error1 is not null within the if block.
+	return error1.ExampleFunction();
+}
+
+// The compiler knows error1 may be null outside the if block.
 Console.WriteLine(error1.FancyPrint()); // CS8602: Dereference of a possible null reference.
 
-// The compiler knows value1 will not be null.
-Console.WriteLine(value1);
+// The compiler knows value1 will not be null outside the if block.
+Console.WriteLine(value1.ExampleFunction());
 
 
 
-// Null awareness possible using AsyncTryResult<int, Error>.
-AsyncTryResult<MyData, MyError> result1 = await Foo.Foo1Async();
-if (result1.IsFailure) {
-	Console.WriteLine(result1.Error.FancyPrint());
-	return;
+////////////////////////////////////////////////////////////////////////////////
+//    Asynchronous example with return values for success and failure.        //
+////////////////////////////////////////////////////////////////////////////////
+
+// Null awareness possible using AsyncTryResult<MyData, MyError>.
+async Task<AsyncTryResult<MyData, MyError>> Foo1Async() {
+
+	await Task.Yield();
+
+	return random.Next(1) == 1
+		? new MyError { Message = "An error occurred." } // Implicit conversion to AsyncTryResult.
+		: new MyData { Number = 1 }; // Implicit conversion to AsyncTryResult.
 }
 
-// The compiler knows result1.Error may be null.
+AsyncTryResult<MyData, MyError> result1 = await Foo1Async();
+if (result1.IsFailure) {
+	// The compiler knows result1.Error is not null within the if block.
+	return result1.Error.ExampleFunction();
+}
+
+// The compiler knows result1.Error may be null outside the if block.
 Console.WriteLine(result1.Error.FancyPrint()); // CS8602: Dereference of a possible null reference.
 
-// The compiler result1.Value will not be null.
-Console.WriteLine(result1.Value);
+// The compiler knows result1.Value will not be null outside the if block.
+Console.WriteLine(result1.Value.ExampleFunction());
 
 
 
 ////////////////////////////////////////////////////////////////////////////////
-//    Example with return value for success only.                             //
+//    Concise error handling example                                          //
+////////////////////////////////////////////////////////////////////////////////
+
+AsyncTryResult<MyData, MyError> result = await Foo1Async();
+if (result.IsFailure) {
+	return result.Error.ExampleFunction();
+}
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+//    Synchronous example with return value for success only.                 //
 ////////////////////////////////////////////////////////////////////////////////
 
 // Null awareness possible using System.Diagnostics.CodeAnalysis attributes.
-if (!Foo.Foo2(out MyData? value2)) {
-	Console.WriteLine("An error occurred.");
-	return;
-}
-Console.WriteLine(value2.Number);
+bool Foo2([NotNullWhen(true)] out MyData? value) {
 
-// Null awareness possible using AsyncTryResult<int>.
-AsyncTryResult<MyData> result2 = await Foo.Foo2Async();
+	if (random.Next(1) == 1) {
+		value = null;
+		return false;
+	}
+
+	value = new() { Number = 1 };
+	return true;
+}
+
+if (!Foo2(out MyData? value2)) {
+	// The compiler knows value2 may be null within the if block.
+	Console.WriteLine(value2.ExampleFunction());
+	return 1;
+}
+
+// The compiler knows value2 will not be null outside the if block.
+Console.WriteLine(value2.ExampleFunction());
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+//    Asynchronous example with return value for success only.                //
+////////////////////////////////////////////////////////////////////////////////
+
+// Null awareness possible using AsyncTryResult<MyData>.
+async Task<AsyncTryResult<MyData>> Foo2Async() {
+
+	await Task.Yield();
+
+	return random.Next(1) == 1
+		? AsyncTryResult<MyData>.Failure
+		: new MyData { Number = 1 }; // Implicit conversion to AsyncTryResult.
+}
+
+AsyncTryResult<MyData> result2 = await Foo2Async();
 if (result2.IsFailure) {
-	Console.WriteLine("An error occurred.");
-	return;
+	// The compiler knows result2.Value may be null within the if block.
+	Console.WriteLine(result2.Value.ExampleFunction());
+	return 1;
 }
-Console.WriteLine(result2.Value);
+
+// The compiler knows result2.Value will not be null outside the if block.
+Console.WriteLine(result2.Value.ExampleFunction());
 
 
 
 ////////////////////////////////////////////////////////////////////////////////
-//    Example with return value for failure only.                             //
+//    Synchronous example with return value for failure only.                 //
 ////////////////////////////////////////////////////////////////////////////////
 
 // Null awareness possible using System.Diagnostics.CodeAnalysis attributes.
-if (!Foo.Foo3(out MyError? error3)) {
-	Console.WriteLine(error3.FancyPrint());
-}
-Console.WriteLine("Operation completed successfully.");
+bool Foo3([NotNullWhen(false)] out MyError? error) {
 
-// Null awareness possible using AsyncTryError<Error>.
-AsyncTryError<MyError> result3 = await Foo.Foo3Async();
-if (result3.IsError) {
-	Console.WriteLine(result3.Error.FancyPrint());
+	if (random.Next(1) == 1) {
+		error = new() { Message = "An error occurred." };
+		return false;
+	}
+
+	error = null;
+	return true;
 }
-Console.WriteLine("Operation completed successfully.");
+
+if (!Foo3(out MyError? error3)) {
+	// The compiler knows error3 is not null within the if block.
+	return error3.ExampleFunction();
+}
+
+// The compiler knows error3 may be null outside the if block.
+Console.WriteLine(error3.FancyPrint()); // CS8602: Dereference of a possible null reference.
 
 
 
 ////////////////////////////////////////////////////////////////////////////////
-//    Example with value types.                                               //
+//    Asynchronous example with return value for failure only.                //
 ////////////////////////////////////////////////////////////////////////////////
 
-// Synchronous method with nullable value types.
-if (!Foo.ValueFoo(out int? value4, out MyError? error4)) {
-	Console.WriteLine(error4.FancyPrint());
-	return;
+// Null awareness possible using AsyncTryError<MyError>.
+async Task<AsyncTryError<MyError>> Foo3Async() {
+
+	await Task.Yield();
+
+	return random.Next(1) == 1
+		? new MyError { Message = "An error occurred." } // Implicit conversion to AsyncTryResult.
+		: AsyncTryError<MyError>.Success;
 }
+
+AsyncTryError<MyError> result3 = await Foo3Async();
+if (result3.IsFailure) {
+	// The compiler knows result3.Error is not null within the if block.
+	return result3.Error.ExampleFunction();
+}
+
+// The compiler knows result3.Error may be null outside the if block.
+Console.WriteLine(result3.Error.FancyPrint()); // CS8602: Dereference of a possible null reference.
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+//    Synchronous example with nullable value types.                          //
+////////////////////////////////////////////////////////////////////////////////
+
+// Attempt to provide null awareness possible using System.Diagnostics.CodeAnalysis attributes.
+bool ValueFoo([NotNullWhen(true)] out int? value, [NotNullWhen(false)] out MyError? error) {
+
+	if (random.Next(1) == 1) {
+		value = null;
+		error = new() { Message = "An error occurred." };
+		return false;
+	}
+
+	value = 1;
+	error = null;
+	return true;
+}
+
+if (!ValueFoo(out int? value4, out MyError? error4)) {
+	return error4.ExampleFunction();
+}
+
+// The compiler should know that value4 is not null outside the if block.
 int notNullValue4 = value4; // CS0266 Cannot implicitly convert type 'int?' to 'int'.
 Console.WriteLine(value4); // No error but this is using the Console.WriteLine(object? value) overload.
 
 
 
+////////////////////////////////////////////////////////////////////////////////
+//    Asynchronous example with nullable value types.                         //
+////////////////////////////////////////////////////////////////////////////////
+
 // UnrestrictedAsyncTryResult<TValue, TError> was created just for this example.
-// Unlike AsyncTryResult<TValue, TError> It does not constraint TValue to reference types.
-UnrestrictedAsyncTryResult<int, MyError> result4 = await Foo.ValueFooAsyncUnrestricted();
+// Unlike AsyncTryResult<TValue, TError> it does not constrain TValue to reference types.
+async Task<UnrestrictedAsyncTryResult<int, MyError>> ValueFooAsyncUnrestricted() {
 
-// No if statement checking result4.IsSuccess or result4.IsFailure.
+	await Task.Yield();
 
-// MyError is a reference types and the appropriate warning is raised for this unchecked access.
+	return random.Next(1) == 1
+		? new MyError { Message = "An error occurred." } // Implicit conversion to AsyncTryResult.
+		: 1;
+}
+
+UnrestrictedAsyncTryResult<int, MyError> result4 = await ValueFooAsyncUnrestricted();
+if (result4.IsFailure) {
+
+	// result4.Value has type int? but the compiler represents it as just int.
+	// No warning raised. If result4.Value is null this silently fails and evaluates to 0.
+	int notNullResult4Value = result4.Value;
+
+	return result4.Error.ExampleFunction();
+}
+
+// MyError is a reference types and the appropriate warning is raised for an unchecked access.
 Console.WriteLine(result4.Error.FancyPrint()); // CS8602: Dereference of a possible null reference.
 
-// result4.Value is declared as TValue? but the compiler thinks it's just int here.
-int notNullResultValue4 = result4.Value; // No warning raised. If result4.Value is null this silently evaluates to 0.
+Console.WriteLine(result4.Value);
 
 
+////////////////////////////////////////////////////////////////////////////////
+//    Synchronous example with boxed value types.                             //
+////////////////////////////////////////////////////////////////////////////////
 
-// Synchronous method with boxed value types.
-if (!Foo.ValueFooBoxed(out Box<int>? value5, out MyError? error5)) {
-	Console.WriteLine(error5.FancyPrint());
-	return;
+// Null awareness possible using System.Diagnostics.CodeAnalysis attributes.
+bool ValueFooBoxed([NotNullWhen(true)] out Box<int>? value, [NotNullWhen(false)] out MyError? error) {
+
+	if (random.Next(1) == 1) {
+		value = null;
+		error = new() { Message = "An error occurred." };
+		return false;
+	}
+
+	value = 1;
+	error = null;
+	return true;
 }
-int notNullValue5 = value5; // Proper type narrowing and no error. Implicit cast from Box<int> to int.
+
+if (!ValueFooBoxed(out Box<int>? value5, out MyError? error5)) {
+
+	// The compiler knows that value5 may be null here.
+	Console.WriteLine(value5); // CS8604: Possible null reference argument...
+
+	return error5.ExampleFunction();
+}
+
+// The compiler knows value5 is not null outside the if block.
+int notNullValue5 = value5; // Implicit cast from Box<int> to int.
 Console.WriteLine(value5); // This uses the Console.WriteLine(int value) overload.
 
 
 
+////////////////////////////////////////////////////////////////////////////////
+//    Asynchronous example with boxed value types.                            //
+////////////////////////////////////////////////////////////////////////////////
+
 // Null awareness possible using AsyncTryValueResult<int, Error>.
-AsyncTryValueResult<int, MyError> result5 = await Foo.ValueFooAsync();
+async Task<AsyncTryValueResult<int, MyError>> ValueFooAsync() {
+
+	await Task.Yield();
+
+	return random.Next(1) == 1
+		? new MyError { Message = "An error occurred." } // Implicit conversion to AsyncTryResult.
+		: 1;
+}
+
+AsyncTryValueResult<int, MyError> result5 = await ValueFooAsync();
 if (result5.IsFailure) {
 
 	// The compiler knows that result5.Value may be null here.
 	Console.WriteLine(result5.Value); // CS8604: Possible null reference argument...
 
-	Console.WriteLine(result5.Error.FancyPrint());
-	return;
+	return result5.Error.ExampleFunction();
 }
+
+// The compiler knows result5.Error may be null outside the if block.
+Console.WriteLine(result5.Error.FancyPrint()); // CS8602: Dereference of a possible null reference.
 
 // The compiler knows that result5.Value will not be null here.
 Console.WriteLine(result5.Value); // Box<int> is implicitly cast to int.
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
+return 0;

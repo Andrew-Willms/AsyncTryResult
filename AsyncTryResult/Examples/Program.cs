@@ -206,7 +206,7 @@ if (!ValueFoo(out int? value4, out MyError? error4)) {
 }
 
 // The compiler should know that value4 is not null outside the if block.
-int notNullValue4 = value4; // CS0266 Cannot implicitly convert type 'int?' to 'int'.
+//int notNullValue4 = value4; // CS0266 Cannot implicitly convert type 'int?' to 'int'.
 Console.WriteLine(value4); // No error but this is using the Console.WriteLine(object? value) overload.
 
 

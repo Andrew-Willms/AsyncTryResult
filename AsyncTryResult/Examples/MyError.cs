@@ -11,7 +11,7 @@ public record MyError {
 	}
 
 	public int ExampleFunction() {
-		return 1;
+		return Message.Length;
 	}
 
 }

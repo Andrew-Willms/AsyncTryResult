@@ -3,6 +3,7 @@
 	<PropertyGroup>
 		<TargetFramework>net10.0</TargetFramework>
 		<Nullable>enable</Nullable>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -31,19 +32,12 @@
 	</ItemGroup>
 
 	<PropertyGroup>
+		<Deterministic>true</Deterministic>
+		<ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
 		<EmbedUntrackedSources>true</EmbedUntrackedSources>
 		<IncludeSymbols>true</IncludeSymbols>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
-	</PropertyGroup>
-
-	<PropertyGroup>
-		<Deterministic>true</Deterministic>
-		<ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
-	</PropertyGroup>
-
-	<PropertyGroup>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 	</PropertyGroup>
 
 </Project>

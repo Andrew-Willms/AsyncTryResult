@@ -43,34 +43,3 @@ public record AsyncTryValueResult<TValue, TError>
 	}
 
 }
-
-
-
-public record AsyncTryValueResult<TValue> where TValue : struct {
-
-	public Box<TValue>? Value { get; }
-
-	[MemberNotNullWhen(true, nameof(Value))]
-	public bool IsSuccess { get; }
-
-	[MemberNotNullWhen(false, nameof(Value))]
-	public bool IsFailure { get; }
-
-	public AsyncTryValueResult(TValue value) {
-		Value = value;
-		IsSuccess = true;
-		IsFailure = false;
-	}
-
-	private AsyncTryValueResult() {
-		IsSuccess = false;
-		IsFailure = true;
-	}
-
-	public static readonly AsyncTryValueResult<TValue> Failure = new();
-
-	public static implicit operator AsyncTryValueResult<TValue>(TValue success) {
-		return new(success);
-	}
-
-}

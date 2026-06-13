@@ -34,8 +34,8 @@ public record AsyncTryValueResult<TValue, TError>
 		IsFailure = true;
 	}
 
-	public static implicit operator AsyncTryValueResult<TValue, TError>(TValue success) {
-		return new(success);
+	public static implicit operator AsyncTryValueResult<TValue, TError>(TValue value) {
+		return new(value);
 	}
 
 	public static implicit operator AsyncTryValueResult<TValue, TError>(TError error) {

@@ -183,7 +183,7 @@ Console.WriteLine(result6.Value); // Box<int> is implicitly cast to int.
 //    Synchronous example with boxed value types.                             //
 ////////////////////////////////////////////////////////////////////////////////
 
-// Null awareness possible using System.Diagnostics.CodeAnalysis attributes.
+// Null awareness possible using System.Diagnostics.CodeAnalysis attributes and the Box<T> type.
 bool ValueFooBoxed([NotNullWhen(true)] out Box<int>? value, [NotNullWhen(false)] out MyError? error) {
 
 	if (random.Next(1) == 1) {

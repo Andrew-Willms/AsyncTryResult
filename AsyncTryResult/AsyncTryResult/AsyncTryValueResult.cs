@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace AsyncTryResult;
+namespace Willmsy.AsyncTryResult;
 
 
 

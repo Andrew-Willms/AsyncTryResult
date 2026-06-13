@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
-using AsyncTryResult;
+using Willmsy.AsyncTryResult;
+
 using Examples;
 // ReSharper disable MoveLocalFunctionAfterJumpStatement
 

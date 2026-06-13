@@ -1,4 +1,4 @@
-﻿namespace AsyncTryResult;
+﻿namespace Willmsy.AsyncTryResult;
 
 
 

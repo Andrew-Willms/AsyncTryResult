@@ -50,7 +50,6 @@ public record AsyncTryResult<TValue, TError>
 	/// </summary>
 	/// <param name="value">The value to be stored by the <see cref="AsyncTryResult&lt;TValue, TError&gt;">AsyncTryResult</see>.</param>
 	public AsyncTryResult(TValue value) {
-
 		Value = value;
 		IsSuccess = true;
 		IsFailure = false;
@@ -61,7 +60,6 @@ public record AsyncTryResult<TValue, TError>
 	/// </summary>
 	/// <param name="error">The error to be stored by the <see cref="AsyncTryResult&lt;TValue, TError&gt;">AsyncTryResult</see>.</param>
 	public AsyncTryResult(TError error) {
-
 		Error = error;
 		IsSuccess = false;
 		IsFailure = true;
@@ -82,6 +80,5 @@ public record AsyncTryResult<TValue, TError>
 	public static implicit operator AsyncTryResult<TValue, TError>(TError error) {
 		return new(error);
 	}
-
 
 }
